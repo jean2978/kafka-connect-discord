@@ -1,0 +1,8 @@
+{
+  "connector.class": "com.example.DiscordSourceConnector",
+  "tasks.max": "1",
+  "discord.token": "${env:DISCORD_TOKEN}",
+  "discord.channel.id": "1026585783924174882",
+  "discord.read.history": "true",
+  "topic": "discord-messages"
+}

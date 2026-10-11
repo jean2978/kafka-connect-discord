@@ -11,17 +11,77 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.release>17</maven.compiler.release>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
     <kafka.connect.version>4.1.1</kafka.connect.version>
+    <jda.version>6.7.0</jda.version>
   </properties>
-  <!-- TODO: Add javacord dependency for Discord API interaction -->
   <!-- TODO: Add logging dependencies (e.g., SLF4J, Logback) -->
   <dependencies>
+    <!-- Provided by the Kafka Connect worker at runtime -->
     <dependency>
         <groupId>org.apache.kafka</groupId>
         <artifactId>connect-api</artifactId>
         <version>${kafka.connect.version}</version>
+        <scope>provided</scope>
+    </dependency>
+    <dependency>
+        <groupId>net.dv8tion</groupId>
+        <artifactId>JDA</artifactId>
+        <version>${jda.version}</version>
+        <exclusions>
+            <!-- Voice support, not needed for reading text channels -->
+            <exclusion>
+                <groupId>club.minnced</groupId>
+                <artifactId>opus-java</artifactId>
+            </exclusion>
+            <exclusion>
+                <groupId>com.google.crypto.tink</groupId>
+                <artifactId>tink</artifactId>
+            </exclusion>
+        </exclusions>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.4.2</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <!-- Implementation-Version is what the connectors report as their version -->
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+      <!-- Builds target/plugin/discord-connector/ with the connector jar and its dependencies,
+           ready to drop into a Connect worker's plugin.path -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.7.1</version>
+        <configuration>
+          <descriptors>
+            <descriptor>src/assembly/plugin.xml</descriptor>
+          </descriptors>
+          <finalName>plugin</finalName>
+          <appendAssemblyId>false</appendAssemblyId>
+        </configuration>
+        <executions>
+          <execution>
+            <id>connect-plugin</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>
