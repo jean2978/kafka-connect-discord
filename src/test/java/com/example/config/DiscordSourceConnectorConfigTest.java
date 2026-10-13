@@ -15,7 +15,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 class DiscordSourceConnectorConfigTest {
 
-    /** A config with every required property set. Copy it and change one thing per test. */
     private static Map<String, String> validProps() {
         Map<String, String> props = new HashMap<>();
         props.put(DiscordSourceConnectorConfig.TOKEN_CONFIG, "test-token");
@@ -24,7 +23,6 @@ class DiscordSourceConnectorConfigTest {
         return props;
     }
 
-    // Worked example: arrange (build props), act (create the config), assert (check the getters).
     @Test
     void parsesValidConfig() {
         DiscordSourceConnectorConfig config = new DiscordSourceConnectorConfig(validProps());
