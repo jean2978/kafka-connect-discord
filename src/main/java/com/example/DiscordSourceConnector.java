@@ -25,7 +25,6 @@ public class DiscordSourceConnector extends SourceConnector {
 
     @Override
     public void start(Map<String, String> props) {
-        // Fail fast on invalid config before any task is started
         new DiscordSourceConnectorConfig(props);
         this.props = props;
     }
@@ -41,7 +40,6 @@ public class DiscordSourceConnector extends SourceConnector {
 
     @Override
     public List<Map<String, String>> taskConfigs(int maxTasks) {
-        // A single channel can only be read in order by one task
         return List.of(props);
     }
 }

@@ -46,7 +46,7 @@ podman compose up -d
 curl localhost:8083/connector-plugins         # DiscordSourceConnector should be listed
 ```
 
-Set `discord.channel.id` in `docker/discord-source-connector.json`, then create the connector:
+The `connect-init` service waits for the worker and then creates the `discord-source` connector from `docker/discord-source-connector.json`. Set `discord.channel.id` in that file before starting. To apply edits to it later, run `podman compose up connect-init`, or PUT it by hand:
 
 ```bash
 curl -X PUT -H "Content-Type: application/json" \

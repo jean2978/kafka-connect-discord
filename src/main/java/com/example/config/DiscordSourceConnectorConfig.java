@@ -53,6 +53,11 @@ public class DiscordSourceConnectorConfig extends AbstractConfig {
             if (value == null || !((String) value).matches("\\d{1,20}")) {
                 throw new ConfigException(name, value, "Must be a numeric Discord ID");
             }
+            try {
+                Long.parseUnsignedLong((String) value);
+            } catch (NumberFormatException e) {
+                throw new ConfigException(name, value, "Too large for a Discord ID");
+            }
         }
 
         @Override

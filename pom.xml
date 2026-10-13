@@ -15,6 +15,8 @@
     <maven.compiler.target>17</maven.compiler.target>
     <kafka.connect.version>4.1.1</kafka.connect.version>
     <jda.version>6.7.0</jda.version>
+    <junit.version>5.13.4</junit.version>
+    <mockito.version>5.20.0</mockito.version>
   </properties>
   <!-- TODO: Add logging dependencies (e.g., SLF4J, Logback) -->
   <dependencies>
@@ -41,10 +43,46 @@
             </exclusion>
         </exclusions>
     </dependency>
+
+    <!-- Tests -->
+    <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <version>${junit.version}</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-junit-jupiter</artifactId>
+        <version>${mockito.version}</version>
+        <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
     <plugins>
+      <!-- Sets ${org.mockito:mockito-core:jar} to the Mockito jar path, used for the agent below -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.8.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>properties</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.3</version>
+        <configuration>
+          <!-- JDK 21+ warns when Mockito attaches itself at runtime; load it as an agent instead -->
+          <argLine>-javaagent:${org.mockito:mockito-core:jar}</argLine>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>

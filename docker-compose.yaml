@@ -13,22 +13,18 @@ services:
     ports:
       - "9092:9092"
     environment:
-      # Single node acting as both broker and KRaft controller
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      # PLAINTEXT for containers on the compose network, PLAINTEXT_HOST for clients on the host
       KAFKA_LISTENERS: PLAINTEXT://:29092,CONTROLLER://:9093,PLAINTEXT_HOST://:9092
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      # Only one broker, so internal topics can't be replicated
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-      # Keep data in a named volume so it survives the container being recreated
       KAFKA_LOG_DIRS: /var/lib/kafka/data
     volumes:
       - kafka-data:/var/lib/kafka/data
@@ -49,11 +45,9 @@ services:
       - "8083:8083"
     command: ["/opt/kafka/bin/connect-distributed.sh", "/etc/kafka-connect/connect-distributed.properties"]
     environment:
-      # Read from .env; connector configs reference it as ${env:DISCORD_TOKEN}
       DISCORD_TOKEN: ${DISCORD_TOKEN:-}
     volumes:
       - ./docker/connect-distributed.properties:/etc/kafka-connect/connect-distributed.properties:ro
-      # Connector jar + dependencies from `mvn package`; restart this service to pick up a new build
       - ./target/plugin/discord-connector:/opt/connectors/discord-connector:ro
 
   kafka-ui:
